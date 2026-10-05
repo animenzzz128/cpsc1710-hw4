@@ -81,6 +81,30 @@ Why real-world tokenization is hard (examples from this text):
 - Languages without spaces (Chinese, Japanese) cannot be split on whitespace.
 - Tokenizers differ between models, so token counts and costs are not portable.
 
+## Q2.3 Evaluation of the generated versions (draft)
+
+I wrote `prompt.txt` from my understanding of `tiny_rnn.py`, then had a subagent that could read
+only that file implement it blind, twice (`generated_v1.py`, then `generated_v2.py` after two small
+prompt edits).
+
+- **Matches:** both versions reproduce the original's data (143 characters, 22-character vocab,
+  103 samples), architecture (Embedding 32, LSTM 128, Dense), training (Adam 0.01, batch 64,
+  20 epochs, seed 1710), final loss (0.271319717168808) and every generated sample, character for
+  character. The prompt gave exact numbers and a seeded shared generator, so little was left open.
+- **v1 vs original:** the only output difference was the label `Vocabulary:` instead of `Vocab:`,
+  because the prompt only said "the vocabulary list". Adding the exact label closed it.
+- **v2 vs original:** the label now matches, but v2 prints an extra blank line after each
+  probability list, because the prompt did not say how the sample is separated from it.
+- **Notable code differences (same behavior):** the generated programs call `model(x, training=False)`
+  instead of `model.predict`, v1 seeds with three separate calls instead of
+  `set_random_seed`, they use a numerically stabilized softmax in NumPy instead of
+  `tf.nn.softmax`, and they inline the helpers (no `next_char_probabilities` function).
+- **Lesson:** exact outputs came from exact numbers and seeds in the prompt, not from describing
+  the idea in general terms. Details a spec leaves out (print labels, blank lines, which
+  forward-pass call, what "180 characters" counts) are where versions drift. Because I wrote
+  the prompt after seeing the program's output, matching it was easier than a prompt written from
+  the assignment alone.
+
 ## Word tokenizer v2 (improved)
 
 `tokenizers/word_tokenizer_v2.py` fixes the scratch version's Unicode problems: it treats
