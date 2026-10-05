@@ -59,6 +59,7 @@ Subword tokens counted with `tiktoken`, encoding **`o200k_base`** (the one tikto
 |---|---|---|---|
 | Character | 341 | 62 | 1.00 |
 | Word (scratch steps) | 47 | 44 | 7.26 |
+| Word (`word_tokenizer_v2.py`) | 53 | 51 (incl. `<unk>`) | 6.43 |
 | Subword (o200k_base) | 111 | n/a (about 200k fixed) | 3.07 |
 
 Trade-offs:
@@ -79,3 +80,10 @@ Why real-world tokenization is hard (examples from this text):
 - Case: `Chat` vs `chat`; lowercasing loses information.
 - Languages without spaces (Chinese, Japanese) cannot be split on whitespace.
 - Tokenizers differ between models, so token counts and costs are not portable.
+
+## Word tokenizer v2 (improved)
+
+`tokenizers/word_tokenizer_v2.py` fixes the scratch version's Unicode problems: it treats
+curly quotes and em dashes as separators (`labs—no` -> `labs`, `no`), keeps `3.7%`, hyphenated
+words and the URL whole, keeps `≠` and `☕` as tokens, and maps unknown words to `<unk>`.
+Result: **53 tokens, vocab 51.** Known weakness: `e.g.` splits into `e`, `g`.
