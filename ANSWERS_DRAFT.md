@@ -40,8 +40,9 @@ Lines in `tiny_rnn.py` that convert characters to ids and back:
    text' <- words' joined with single spaces
 ```
 
-Each step is implemented and tested in `tokenizers/scratch/step1.py` ... `step5.py`.
-Result on the input: 47 words, vocab 44, round trip exact for words but the joined text is
+Each step is implemented and tested in `tokenizers/scratch/step1.py` ... `step5.py`, and the
+five steps are combined in `tokenizers/word_tokenizer_v1.py` (v2 is the improved version below).
+Length of the input after tokenization: **47 tokens** (from 341 characters), vocab 44, round trip exact for words but the joined text is
 lossy (case, punctuation and line breaks are gone).
 
 `string.punctuation` only covers ASCII punctuation, so it misses: `—` (em dash),
@@ -58,7 +59,7 @@ Subword tokens counted with `tiktoken`, encoding **`o200k_base`** (the one tikto
 | Scheme | Tokens | Vocab (on this text) | Chars/token |
 |---|---|---|---|
 | Character | 341 | 62 | 1.00 |
-| Word (scratch steps) | 47 | 44 | 7.26 |
+| Word v1 (`word_tokenizer_v1.py`) | 47 | 44 | 7.26 |
 | Word (`word_tokenizer_v2.py`) | 53 | 51 (incl. `<unk>`) | 6.43 |
 | Subword (o200k_base) | 111 | n/a (about 200k fixed) | 3.07 |
 
